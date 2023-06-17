@@ -1,16 +1,16 @@
-// This import is only for jsdoc typings and intellisense
-import Store from "./store.js";
+// Main class for render view according to State
 
 export default class View {
-  $ = {};
-  $$ = {};
+  // Initialise empty helper objects
+  $ = {}; // For single elements
+  $$ = {}; // For Node List (Group of Elements)
 
   constructor() {
     /**
-     * Pre-select all the elements we'll need (for convenience and clarity)
+     * Main purpose is to Pre-select all the elements we'll need (for convenience and clarity)
      */
 
-    // Single elements
+    // Select single elements-improved with safety helper methods
     this.$.menu = this.#qs('[data-id="menu"]');
     this.$.menuBtn = this.#qs('[data-id="menu-btn"]');
     this.$.menuItems = this.#qs('[data-id="menu-items"]');
@@ -31,8 +31,7 @@ export default class View {
     /**
      * UI-only event listeners
      *
-     * These are listeners that do not mutate state and therefore
-     * can be contained within View entirely.
+     * These are listeners that do not mutate state and therefore can be contained within View entirely.
      */
     this.$.menuBtn.addEventListener("click", (event) => {
       this.#toggleMenu();
@@ -40,11 +39,9 @@ export default class View {
   }
 
   /**
-   * This application follows a declarative rendering methodology
-   * and will re-render every time the state changes
-   *
-   * @see https://www.zachgollwitzer.com/posts/imperative-programming#react-declarative-vs-jquery-imperative
+   * This application follows a declarative rendering methodology and will re-render every time the state changes
    */
+
   render(game, stats) {
     const { playerWithStats, ties } = stats;
     const {
@@ -167,6 +164,7 @@ export default class View {
     this.$.turn.replaceChildren(icon, label);
   }
 
+  // Helper methods - selektors
   /**
    * The #qs and #qsAll methods are "safe selectors", meaning they
    * _guarantee_ the elements we select exist in the DOM (otherwise throw an error)

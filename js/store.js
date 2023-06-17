@@ -1,5 +1,11 @@
+// Main class for tracking state Changes
+
+// Initial State
 const initialState = {
+  // Keep track from players moves
   currentGameMoves: [], // All the player moves for the active game
+
+  // Keep track from game history
   history: {
     currentRoundGames: [],
     allGames: [],
@@ -7,13 +13,7 @@ const initialState = {
 };
 
 /**
- * Store is (loosely) the "Model" in the MV* or MVC pattern
- *
- * Think of this as our abstraction on top of an arbitrary data store.
- * In this app, we're using localStorage, but this class should not require
- * much change if we wanted to change our storage location to an in-memory DB,
- * external location, etc. (just change #getState and #saveState methods)
- *
+ * Store is (loosely) the "Model" in the MVC pattern - abstraction on top of an arbitrary data store
  * This class extends EventTarget so we can emit a `statechange` event when
  * state changes, which the controller can listen for to know when to re-render the view.
  */
@@ -32,23 +32,18 @@ export default class Store extends EventTarget {
    * To avoid storing a complex state object that is difficult to mutate, we store a simple one (array of moves)
    * and derive more useful representations of state via these "getters", which can be accessed as properties on
    * the Store instance object.
-   *
-   * @example
-   *
-   * ```
-   * const store = new Store()
-   *
-   * // Regular property reference (JS evaluates fn under hood)
-   * const game = store.game
-   * const stats = store.stats
-   * ```
+   
    *
    * @see - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get
    */
+
+  // Get Game Statistic
   get stats() {
+    //instantiate getState() - get current state from localStorage
     const state = this.#getState();
 
     return {
+      //record of winning for both players
       playerWithStats: this.players.map((player) => {
         const wins = state.history.currentRoundGames.filter(
           (game) => game.status.winner?.id === player.id
@@ -65,11 +60,14 @@ export default class Store extends EventTarget {
     };
   }
 
+  // Track game flow: current player, moves, winner
   get game() {
     const state = this.#getState();
 
+    // Get current player
     const currentPlayer = this.players[state.currentGameMoves.length % 2];
 
+    // Winning pattern
     const winningPatterns = [
       [1, 2, 3],
       [1, 5, 9],
@@ -83,6 +81,7 @@ export default class Store extends EventTarget {
 
     let winner = null;
 
+    // Get winner
     for (const player of this.players) {
       const selectedSquareIds = state.currentGameMoves
         .filter((move) => move.player.id === player.id)
@@ -169,6 +168,8 @@ export default class Store extends EventTarget {
    * We are not using Redux here, but it gives a good overview of some essential concepts to managing state:
    * @see https://redux.js.org/understanding/thinking-in-redux/three-principles#changes-are-made-with-pure-functions
    */
+
+  // Save current state
   #saveState(stateOrFn) {
     const prevState = this.#getState();
 
@@ -189,6 +190,7 @@ export default class Store extends EventTarget {
     this.dispatchEvent(new Event("statechange"));
   }
 
+  //return current state
   #getState() {
     const item = window.localStorage.getItem(this.storageKey);
     return item ? JSON.parse(item) : initialState;
