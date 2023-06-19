@@ -33,6 +33,8 @@ export default class View {
      *
      * These are listeners that do not mutate state and therefore can be contained within View entirely.
      */
+
+    //toogle menu
     this.$.menuBtn.addEventListener("click", (event) => {
       this.#toggleMenu();
     });
@@ -42,7 +44,9 @@ export default class View {
    * This application follows a declarative rendering methodology and will re-render every time the state changes
    */
 
+  // Render() evaluate current game state (from localStorage) and statistic
   render(game, stats) {
+    //destructuring
     const { playerWithStats, ties } = stats;
     const {
       moves,
@@ -50,6 +54,7 @@ export default class View {
       status: { isComplete, winner },
     } = game;
 
+    // Call private methods
     this.#closeAll();
     this.#clearMoves();
     this.#updateScoreboard(
@@ -67,11 +72,8 @@ export default class View {
     this.#setTurnIndicator(currentPlayer);
   }
 
-  /**
-   * Events that are handled by the "Controller" in app.js
-   * ----------------------------------------------------------
-   */
 
+  // Events that are handled by the "Controller" in app.js
   bindGameResetEvent(handler) {
     this.$.resetBtn.addEventListener("click", handler);
     this.$.modalBtn.addEventListener("click", handler);
