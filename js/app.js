@@ -65,7 +65,6 @@ function init() {
     store.newRound();
   });
 
-  // View rendered after players move
   view.bindPlayerMoveEvent((square) => {
     const existingMove = store.game.moves.find(
       (move) => move.squareId === +square.id
